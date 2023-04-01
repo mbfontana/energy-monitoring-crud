@@ -8,6 +8,7 @@ export const database = new Sequelize({
   username: "energy_monitoring",
   password: "energy_monitoring",
   define: {
+    timestamps: false,
     underscored: true,
   },
 });
