@@ -8,6 +8,7 @@ const router = express.Router();
 router.post("/samples", sampleController.insert);
 
 router.post("/connected", connectedController.insert);
+router.get("/consume", connectedController.consume);
 
 router.post("/disconnected", disconnectedController.insert);
 
