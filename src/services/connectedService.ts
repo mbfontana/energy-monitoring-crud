@@ -1,7 +1,5 @@
-import { database } from "../database/index";
 import { Connected } from "../models";
 import { ConnectedInstance } from "../models/Connected";
-
 
 export const connectedService = {
   save: async (connectedTrigger?: ConnectedInstance) => {
@@ -24,5 +22,11 @@ export const connectedService = {
       `
     );
     return query ? query[0] : null;
+  },
+  getLastConnection: async (applianceId: number) => {
+    return await Connected.findOne({
+      where: { appliance_id: applianceId },
+      order: [["time_stamp", "DESC"]],
+    });
   },
 };

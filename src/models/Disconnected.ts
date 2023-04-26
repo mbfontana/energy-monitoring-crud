@@ -6,7 +6,7 @@ export interface Disconnected {
   timeStamp: Date;
 }
 
-export interface ConnectedInstance extends Model<Disconnected>, Disconnected {}
+export interface DisconnectedInstance extends Model<Disconnected>, Disconnected {}
 
 export const Disconnected = database.define("Disconnected", {
   connectedId: {

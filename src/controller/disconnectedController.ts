@@ -1,11 +1,16 @@
 import { Request, Response } from "express";
 import { disconnectedService } from "../services/disconnectedService";
+import { connectedService } from "../services/connectedService";
+import { ConnectedInstance } from "@models/Connected";
 
 export const disconnectedController = {
   insert: async (req: Request, res: Response) => {
-    const connectTrigger = req.body;
+    const { applianceId, timeStamp } = req.body;
     try {
-      await disconnectedService.save(connectTrigger);
+      const lastConnection = await connectedService.getLastConnection(
+        applianceId
+      );
+      await disconnectedService.save(lastConnection as ConnectedInstance, timeStamp);
       res
         .status(201)
         .json({ message: "Disconnected reference sucessfully registered." });
