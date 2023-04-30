@@ -2,10 +2,18 @@ import { Connected } from "../models";
 import { ConnectedInstance } from "../models/Connected";
 
 export const connectedService = {
-  save: async (connectedTrigger?: ConnectedInstance) => {
-    return await Connected.create(connectedTrigger);
+  save: async ({ realPower, timeStamp, applianceId }: ConnectedInstance) => {
+    return await Connected.create({
+      realPower: realPower,
+      timeStamp: timeStamp,
+      applianceId: Number(applianceId),
+    });
   },
-  getConsume: async (startDateTime: string, endDateTime: string) => {
+  getConsumption: async (
+    id: number,
+    startDateTime: string,
+    endDateTime: string
+  ) => {
     const query = await Connected.sequelize?.query(
       `
       SELECT 
@@ -16,7 +24,7 @@ export const connectedService = {
           connecteds AS ct
           JOIN disconnecteds AS dt ON ct.id = dt.connected_id
       WHERE 
-          ct.time_stamp >= '${startDateTime}' AND dt.time_stamp <= '${endDateTime}'
+          ct.time_stamp >= '${startDateTime}' AND dt.time_stamp <= '${endDateTime}' AND ct.appliance_id = ${id}
       GROUP BY 
           ct.appliance_id;
       `
@@ -24,6 +32,12 @@ export const connectedService = {
     return query ? query[0] : null;
   },
   getLastConnection: async (applianceId: number) => {
+    return await Connected.findOne({
+      where: { appliance_id: applianceId },
+      order: [["time_stamp", "DESC"]],
+    });
+  },
+  getLastDisconnection: async (applianceId: number) => {
     return await Connected.findOne({
       where: { appliance_id: applianceId },
       order: [["time_stamp", "DESC"]],
