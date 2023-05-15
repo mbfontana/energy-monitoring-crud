@@ -1,9 +1,10 @@
 import { Request, Response } from "express";
-import { connectedService } from "../services/connectedService";
-import { applianceService } from "../services/applianceService";
 import { ConnectedInstance } from "@models/Connected";
 import { ApplianceInstance } from "@models/Appliance";
 import { DisconnectedInstance } from "@models/Disconnected";
+import { connectedService } from "../services/connectedService";
+import { applianceService } from "../services/applianceService";
+import { disconnectedService } from "../services/disconnectedService";
 
 export const connectedController = {
   insert: async (req: Request, res: Response) => {
@@ -35,8 +36,9 @@ export const connectedController = {
       const lastConnection = (await connectedService.getLastConnection(
         Number(id)
       )) as ConnectedInstance;
-      const lastDisconnection = (await connectedService.getLastDisconnection(
-        Number(id)
+      const disconnectedId = lastConnection.id ? Number(lastConnection.id) : 35;
+      const lastDisconnection = (await disconnectedService.getLastDisconnection(
+        disconnectedId
       )) as DisconnectedInstance;
 
       const on =
@@ -48,21 +50,23 @@ export const connectedController = {
       const [dailyConsumption, monthlyConsumption] = await Promise.all([
         connectedService.getConsumption(
           Number(id),
-          `2021-${date.getUTCMonth() + 1}-${date.getUTCDate()} 00:00:00`,
-          `2023-${date.getUTCMonth() + 1}-${date.getUTCDate()} 23:59:59`
+          `2023-${date.getMonth() + 1}-${date.getDate()} 00:00:00`,
+          `2023-${date.getMonth() + 1}-${date.getDate()} 23:59:59`
         ),
         connectedService.getConsumption(
           Number(id),
-          `2023-${date.getUTCMonth() + 1}-01 00:00:00`,
-          `2023-${date.getUTCMonth() + 1}-30 23:59:59`
+          `2023-${date.getMonth() + 1}-01 00:00:00`,
+          `2023-${date.getMonth() + 1}-30 23:59:59`
         ),
       ]);
+
+      console.log(`\n\n\n=====> ${dailyConsumption} <=====\n\n\n`);
 
       res.status(200).json({
         id: appliance.id,
         name: appliance.name,
         on,
-        lastTimeOn: lastConnection?.timeStamp,
+        lastTimeOn: lastConnection?.timeStamp || "",
         power: Number(lastConnection?.realPower) || 0,
         consumption: {
           daily: {

@@ -37,10 +37,4 @@ export const connectedService = {
       order: [["time_stamp", "DESC"]],
     });
   },
-  getLastDisconnection: async (applianceId: number) => {
-    return await Connected.findOne({
-      where: { appliance_id: applianceId },
-      order: [["time_stamp", "DESC"]],
-    });
-  },
 };
