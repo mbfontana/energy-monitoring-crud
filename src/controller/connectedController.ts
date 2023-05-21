@@ -36,7 +36,7 @@ export const connectedController = {
       const lastConnection = (await connectedService.getLastConnection(
         Number(id)
       )) as ConnectedInstance;
-      const disconnectedId = lastConnection.id ? Number(lastConnection.id) : 35;
+      const disconnectedId = Number(lastConnection.id) || 0;
       const lastDisconnection = (await disconnectedService.getLastDisconnection(
         disconnectedId
       )) as DisconnectedInstance;
@@ -59,8 +59,6 @@ export const connectedController = {
           `2023-${date.getMonth() + 1}-30 23:59:59`
         ),
       ]);
-
-      console.log(`\n\n\n=====> ${dailyConsumption} <=====\n\n\n`);
 
       res.status(200).json({
         id: appliance.id,
